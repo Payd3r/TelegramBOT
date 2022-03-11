@@ -26,7 +26,12 @@ public class KeyAPI {
 
     public Messages inizializza(Messages m) throws MalformedURLException, IOException {
         String s = "";
-        URL url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates");
+        URL url = null;
+        if (m.lista.size() > 0) {
+            url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates?offset=" + m.lista.get(m.lista.size()).message_id);
+        } else {
+            url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates");
+        }
         InputStream is = url.openConnection().getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String line = null;
