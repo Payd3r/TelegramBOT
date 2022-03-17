@@ -11,16 +11,16 @@ package TelegramAPI;
  */
 public class Chat {
 
-    Long id;
+    public int id;
     String first_name;
     String last_name;
-    String username;
+    public String username;
     String type;
 
     public Chat() {
     }
 
-    public Chat(Long id, String first_name, String last_name, String username, String type) {
+    public Chat(int id, String first_name, String last_name, String username, String type) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;

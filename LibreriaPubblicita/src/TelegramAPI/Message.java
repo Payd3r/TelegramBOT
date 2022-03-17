@@ -14,11 +14,11 @@ import org.json.JSONObject;
  */
 public class Message {
 
-    int message_id = 1;
-    From from = new From();
-    Chat chat = new Chat();
-    Long date = 0L;
-    String text = "";
+    public int message_id = 1;
+    public From from = new From();
+    public Chat chat = new Chat();
+    public Long date = 0L;
+    public String text = "";
 
     Message() {
         message_id = 0;
@@ -34,6 +34,10 @@ public class Message {
         chat = c;
         date = d;
         text = e;
+    }
+
+    public String getCitta() {
+        return text.substring(7, text.length());
     }
 
     @Override

@@ -24,14 +24,10 @@ public class KeyAPI {
         this.KEY = KEY;
     }
 
-    public Messages inizializza(Messages m) throws MalformedURLException, IOException {
+    public Messages update(Messages m) throws MalformedURLException, IOException {
+        m = new Messages();
         String s = "";
-        URL url = null;
-        if (m.lista.size() > 0) {
-            url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates?offset=" + m.lista.get(m.lista.size()).message_id);
-        } else {
-            url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates");
-        }
+        URL url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates");
         InputStream is = url.openConnection().getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String line = null;
@@ -47,5 +43,10 @@ public class KeyAPI {
         URL url = new URL("https://api.telegram.org/bot" + KEY + "/sendMessage?chat_id=" + chat + "&text=" + mess);
         url.openStream();
         System.out.println("Messaggio inviato\n");
+    }
+
+    public void inviaMappa(int id, Double latitudine, Double longitudine) throws MalformedURLException, IOException {
+        URL Url = new URL("https://api.telegram.org/bot" + KEY + "/sendLocation?chat_id=" + id + "&latitude=" + latitudine + "&longitude=" + longitudine);
+        Url.openStream();
     }
 }

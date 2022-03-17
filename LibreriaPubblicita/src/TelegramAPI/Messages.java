@@ -39,7 +39,7 @@ public class Messages {
                     tempFrom.getString("username"),
                     tempFrom.getString("language_code"));
             JSONObject tempChat = arr.getJSONObject(i).getJSONObject("message").getJSONObject("chat");
-            Chat chat = new Chat(tempChat.getLong("id"),
+            Chat chat = new Chat(tempChat.getInt("id"),
                     tempChat.getString("first_name"),
                     tempChat.getString("last_name"),
                     tempChat.getString("username"),
@@ -48,31 +48,6 @@ public class Messages {
             String text = arr.getJSONObject(i).getJSONObject("message").getString("text");
             this.addMessage(new Message(message_id, from, chat, date, text));
         }
-    }
-
-    public String controlla() {
-        if (cercaCitta(lista.get(lista.size() - 1))) {
-            return correggi(lista.get(lista.size() - 1).text.substring(7, lista.get(lista.size() - 1).text.length()));
-        }
-        return "";
-    }
-
-    public String correggi(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == ' ') {
-                s = s.substring(0, i) + "+" + s.substring(i + 1);
-            }
-        }
-        return s;
-    }
-
-    public boolean cercaCitta(Message temp) {
-        if (temp.text.charAt(0) == '/') {
-            if ("citta".equals(temp.text.substring(1, 6))) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
