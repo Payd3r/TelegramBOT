@@ -30,18 +30,33 @@ import org.xml.sax.SAXException;
  *
  * @author mauri_andrea
  */
-public class cercaCitta {
+public class Utente {
 
     Double latitudine;
     Double longitudine;
     String citta;
     int chatId;
 
-    cercaCitta(int a, String c) {
+    Utente(int a, String c) {
         citta = c;
         latitudine = 0D;
         longitudine = 0D;
         chatId = a;
+    }
+
+    Utente(String c) {
+        citta = c;
+        latitudine = 0D;
+        longitudine = 0D;
+        chatId = 0;
+    }
+
+    Utente(String c, int b) {
+        String[] vett = c.split(";");
+        citta = "";
+        latitudine = Double.parseDouble(vett[1]);
+        longitudine = Double.parseDouble(vett[2]);
+        chatId = Integer.parseInt(vett[0]);
     }
 
     public void impostaCoordinate() throws MalformedURLException, IOException, ParserConfigurationException, SAXException {
@@ -59,30 +74,16 @@ public class cercaCitta {
         }
     }
 
-    public int esiste(ArrayList<String> lista) {
-        for (int i = 0; i < lista.size(); i++) {
-            if (Integer.parseInt(lista.get(i).substring(0, 9)) == chatId) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public void aggiornaFile() throws FileNotFoundException, IOException {
-        ArrayList<String> listaChatId = new ArrayList<>();
-        BufferedReader br = new BufferedReader(new FileReader("file.txt"));
-        String line = "";
-        while ((line = br.readLine()) != null) {
-            listaChatId.add(line);
-        }
-        int pos = esiste(listaChatId);
+        Utenti u = Utenti.getUtenti();
+        int pos = u.cerca(this);
         if (pos != -1) {
             svuotaFile();
-            listaChatId.remove(pos);
-            listaChatId.add(this.toCSV());
+            u.lista.remove(pos);
+            u.addUtente(this);
             FileWriter fw = new FileWriter("file.txt", true);
-            for (int i = 0; i < pos; i++) {
-                fw.append(listaChatId.get(i));
+            for (int i = 0; i < u.lista.size(); i++) {
+                fw.append(u.lista.get(i).toCSV());
             }
             fw.flush();
             fw.close();

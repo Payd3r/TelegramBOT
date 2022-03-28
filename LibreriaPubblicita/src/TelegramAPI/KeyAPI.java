@@ -39,10 +39,24 @@ public class KeyAPI {
         return m;
     }
 
+    public Messages updateOffset(Messages m, Long offset) throws MalformedURLException, IOException {
+        m = new Messages();
+        String s = "";
+        URL url = new URL("https://api.telegram.org/bot" + KEY + "/getupdates?offset=" + offset);
+        InputStream is = url.openConnection().getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            s += line + "\n";
+        }
+        reader.close();
+        m.fromJSON(s);
+        return m;
+    }
+
     public void invia(int chat, String mess) throws MalformedURLException, IOException {
         URL url = new URL("https://api.telegram.org/bot" + KEY + "/sendMessage?chat_id=" + chat + "&text=" + mess);
         url.openStream();
-        System.out.println("Messaggio inviato\n");
     }
 
     public void inviaMappa(int id, Double latitudine, Double longitudine) throws MalformedURLException, IOException {

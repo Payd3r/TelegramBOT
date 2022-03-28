@@ -14,21 +14,24 @@ import org.json.JSONObject;
  */
 public class Message {
 
-    public int message_id = 1;
+    public Long update_id = 0L;
+    public Long message_id = 0L;
     public From from = new From();
     public Chat chat = new Chat();
     public Long date = 0L;
     public String text = "";
 
     Message() {
-        message_id = 0;
+        update_id = 0L;
+        message_id = 0L;
         from = new From();
         chat = new Chat();
         date = 0L;
         text = "";
     }
 
-    Message(int a, From b, Chat c, Long d, String e) {
+    Message(Long update, Long a, From b, Chat c, Long d, String e) {
+        update_id = update;
         message_id = a;
         from = b;
         chat = c;
@@ -42,6 +45,6 @@ public class Message {
 
     @Override
     public String toString() {
-        return this.message_id + "\n" + from.toString() + "\n" + chat.toString() + "\n" + this.date + "\n" + this.text + "\n-----------------------------------\n";
+        return this.update_id + "\n" + this.message_id + "\n" + from.toString() + "\n" + chat.toString() + "\n" + this.date + "\n" + this.text + "\n-----------------------------------\n";
     }
 }

@@ -20,13 +20,13 @@ import org.xml.sax.SAXException;
  */
 public class ThreadRefresh extends Thread {
 
-    Messages nuovo, vecchio;
+    Messages nuovo;
     KeyAPI API;
 
     public ThreadRefresh(Messages m, KeyAPI API) throws IOException {
         this.nuovo = m;
         this.API = API;
-        vecchio = API.update(new Messages());
+        nuovo = API.update(nuovo);
     }
 
     public String correggi(String s) {
@@ -51,27 +51,31 @@ public class ThreadRefresh extends Thread {
     public void run() {
         while (true) {
             try {
-                nuovo = API.update(nuovo);
-                if (nuovo.lista.size() != vecchio.lista.size()) {
-                    Message temp = nuovo.lista.get(nuovo.lista.size() - 1);
-                    vecchio = API.update(vecchio);
-                    if (isCitta(temp)) {
-                        cercaCitta cerca = new cercaCitta(temp.chat.id, correggi(nuovo.lista.get(nuovo.lista.size() - 1).getCitta()));
-                        cerca.impostaCoordinate();
-                        System.out.println("Chat: " + cerca.chatId + "\nUser: " + temp.chat.username + "\nLat: " + cerca.latitudine + "\nLon: " + cerca.longitudine);
-                        API.inviaMappa(cerca.chatId, cerca.latitudine, cerca.longitudine);
-                        cerca.aggiornaFile();
+                Long offset = 0L;
+                if (nuovo.lista.size() > 0 || offset != 0L) {
+                    offset = nuovo.lista.get(nuovo.lista.size() - 1).update_id + 1;
+                    for (int i = 0; i < nuovo.lista.size(); i++) {
+                        Message temp = nuovo.lista.get(i);
+                        try {
+                            if (isCitta(temp)) {
+                                Utente cerca = new Utente(temp.chat.id, correggi(temp.getCitta()));
+                                cerca.impostaCoordinate();
+                                System.out.println("Chat: " + cerca.chatId + "\nUser: " + temp.chat.username + "\nLat: " + cerca.latitudine + "\nLon: " + cerca.longitudine);
+                                API.inviaMappa(cerca.chatId, cerca.latitudine, cerca.longitudine);
+                                cerca.aggiornaFile();
+                            }
+                        } catch (Exception e) {
+                            API.invia(temp.chat.id, "Errore");
+                        }
                     }
-
+                    nuovo = API.updateOffset(nuovo, offset);
+                } else {
+                    nuovo = API.update(nuovo);
                 }
                 Thread.sleep(300);
             } catch (IOException ex) {
                 Logger.getLogger(ThreadRefresh.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
-                Logger.getLogger(ThreadRefresh.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ParserConfigurationException ex) {
-                Logger.getLogger(ThreadRefresh.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SAXException ex) {
                 Logger.getLogger(ThreadRefresh.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

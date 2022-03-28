@@ -16,7 +16,6 @@ import org.json.JSONObject;
 public class Messages {
 
     public ArrayList<Message> lista;
-    int utenti;
 
     public Messages() {
         lista = new ArrayList<Message>();
@@ -26,28 +25,54 @@ public class Messages {
         lista.add(m);
     }
 
-    public void fromJSON(String s) {
+    public boolean fromJSON(String s) {
         JSONObject obj = new JSONObject(s);
         JSONArray arr = obj.getJSONArray("result");
         for (int i = 0; i < arr.length(); i++) {
-            int message_id = arr.getJSONObject(i).getJSONObject("message").getInt("message_id");
+            Long update_id = arr.getJSONObject(i).getLong("update_id");
+            Long message_id = arr.getJSONObject(i).getJSONObject("message").getLong("message_id");
             JSONObject tempFrom = arr.getJSONObject(i).getJSONObject("message").getJSONObject("from");
-            From from = new From(tempFrom.getLong("id"),
-                    tempFrom.getBoolean("is_bot"),
-                    tempFrom.getString("first_name"),
-                    tempFrom.getString("last_name"),
-                    tempFrom.getString("username"),
-                    tempFrom.getString("language_code"));
+            From from;
+            try {
+                from = new From(tempFrom.getLong("id"),
+                        tempFrom.getBoolean("is_bot"),
+                        tempFrom.getString("first_name"),
+                        tempFrom.getString("last_name"),
+                        tempFrom.getString("username"),
+                        tempFrom.getString("language_code"));
+            } catch (Exception e) {
+                from = new From(tempFrom.getLong("id"),
+                        tempFrom.getBoolean("is_bot"),
+                        tempFrom.getString("first_name"),
+                        tempFrom.getString("last_name"),
+                        tempFrom.getString("first_name") + "_" + tempFrom.getString("last_name"),
+                        tempFrom.getString("language_code"));
+            }
             JSONObject tempChat = arr.getJSONObject(i).getJSONObject("message").getJSONObject("chat");
-            Chat chat = new Chat(tempChat.getInt("id"),
-                    tempChat.getString("first_name"),
-                    tempChat.getString("last_name"),
-                    tempChat.getString("username"),
-                    tempChat.getString("type"));
+            Chat chat;
+            try {
+                chat = new Chat(tempChat.getInt("id"),
+                        tempChat.getString("first_name"),
+                        tempChat.getString("last_name"),
+                        tempChat.getString("username"),
+                        tempChat.getString("type"));
+            } catch (Exception e) {
+                chat = new Chat(tempChat.getInt("id"),
+                        tempChat.getString("first_name"),
+                        tempChat.getString("last_name"),
+                        tempChat.getString("first_name") + "_" + tempChat.getString("last_name"),
+                        tempChat.getString("type"));
+            }
             Long date = arr.getJSONObject(i).getJSONObject("message").getLong("date");
-            String text = arr.getJSONObject(i).getJSONObject("message").getString("text");
-            this.addMessage(new Message(message_id, from, chat, date, text));
+            String text = "";
+            try {
+                text = arr.getJSONObject(i).getJSONObject("message").getString("text");
+            } catch (Exception e) {
+                return false;
+            }
+            this.addMessage(new Message(update_id, message_id, from, chat, date, text));
         }
+        return true;
     }
 
     @Override
